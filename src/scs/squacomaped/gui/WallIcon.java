@@ -8,8 +8,8 @@ public class WallIcon extends Icon {
 
 	private static final long serialVersionUID = 1L;
 
-	public WallIcon(MapEditorMain m, short cmd, String filename, MouseListener ml) {
-		super(m, cmd, filename, ml);
+	public WallIcon(MapEditorMain m, int cmd, String filename) {
+		super(m, cmd, filename);
 	}
 
 	/*public void paint(Graphics g) {

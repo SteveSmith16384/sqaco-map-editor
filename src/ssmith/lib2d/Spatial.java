@@ -42,6 +42,11 @@ public abstract class Spatial {
 	public String toString() {
 		return name;
 	}
+	
+	
+	public String getName() {
+		return name;
+	}
 
 
 	public MyRectF getWorldBounds() {

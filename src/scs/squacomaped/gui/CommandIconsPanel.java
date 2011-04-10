@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import scs.squacomaped.MapEditorMain;
 
-public class CommandIconsPanel extends AbstractIconPanel {
+public class CommandIconsPanel extends AbstractIconPanel { // todo - delete
 	
 	/**
 	 * 
@@ -13,7 +13,7 @@ public class CommandIconsPanel extends AbstractIconPanel {
 	private Icon draw, erase, pick;
 	
 	public CommandIconsPanel(MapEditorMain m) {
-		super();
+	/*	super();
 		
 		this.setPreferredSize(new Dimension(Icon.ICON_SIZE, Icon.ICON_SIZE));
 		
@@ -22,7 +22,7 @@ public class CommandIconsPanel extends AbstractIconPanel {
 		erase = new CommandIcon(m, CommandIcon.CMD_ERASE, CommandIcon.ICONS_DIR + "erase.png", m);
 		this.add(erase);
 		pick = new CommandIcon(m, CommandIcon.CMD_PICK, CommandIcon.ICONS_DIR + "pick.png", m);
-		this.add(pick);
+		this.add(pick);*/
 	}
 
 }
