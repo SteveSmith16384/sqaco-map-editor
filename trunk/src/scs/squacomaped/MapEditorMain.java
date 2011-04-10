@@ -25,74 +25,81 @@ import scs.squacomaped.gui.IconPanelsPanel;
 import scs.squacomaped.gui.MapWindow;
 import scs.squacomaped.gui.MyMenuBar;
 import scs.squacomaped.gui.SelectLayersPanel;
+import ssmith.lib2d.Camera;
+import ssmith.lib2d.shapes.Line;
 
-public class MapEditorMain extends JFrame implements MouseListener, ActionListener, MouseMotionListener, WindowListener {
+// Todo - rename
+public class MapEditorMain extends JFrame implements ActionListener, WindowListener {
 
 	public static final boolean DEBUG = false;
 	public static final float VERSION = 0.1f;
-	public static final String MAP_ED_ICONS = "map_editor/map_ed_icons/";
+	public static final String MAP_ED_ICONS = "data/icons/";
 	public static final String TITLE = "SquCo Map Editor";
 
 	private static final long serialVersionUID = 1L;
 
-	private MapData map_data;
+	private MapData map_data = new MapData();
 	private MapWindow map_window;
 	private static Hashtable<String, Image> img_cache = new Hashtable<String, Image>();
-	public Icon selected_icon = null;
-	private IconPanelsPanel icons_panel = new IconPanelsPanel(this);
-	public SelectLayersPanel layers_panel = new SelectLayersPanel(this);
+	private Icon selected_icon = null;
+	private IconPanelsPanel icons_panel;
+	public SelectLayersPanel layers_panel;
 	private String current_filename = "";
 	private JScrollPane scroll;
 	private boolean data_changed = false;
+	public Camera cam;
 
 	public MapEditorMain() {
 		try {
+			icons_panel = new IconPanelsPanel(this);
+			layers_panel = new SelectLayersPanel();
+
 			this.updateTitle();
 
 			this.getContentPane().setLayout(new BorderLayout());
 
 			this.getContentPane().add(layers_panel, BorderLayout.EAST);
-			//this.getContentPane().add(new CommandIconsPanel(this), BorderLayout.WEST);
+			// this.getContentPane().add(new CommandIconsPanel(this),
+			// BorderLayout.WEST);
 			this.getContentPane().add(new MyMenuBar(this), BorderLayout.NORTH);
 			this.getContentPane().add(icons_panel, BorderLayout.SOUTH);
 
+			map_window = new MapWindow(this);
+			scroll = new JScrollPane(map_window);
+			scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			this.getContentPane().add(scroll, BorderLayout.CENTER);
+
 			this.setSize(400, 400);
+			cam = new Camera(map_window);
 			this.setVisible(true);
-			
+
 			this.addWindowListener(this);
-			
+
 			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-
 	public MapData getMapData() {
 		return this.map_data;
 	}
-
 
 	private void updateTitle() {
 		this.setTitle(TITLE + " Map Editor: " + this.current_filename);
 	}
 
-
 	public void loadMap(String filename) throws IOException {
 		current_filename = filename;
 		this.map_data = MapEditorImportExport.Import(filename);
-		if (scroll != null) {
-			this.remove(scroll);
-		}
-		map_window = new MapWindow(this);
-		scroll = new JScrollPane(map_window);
-		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		this.getContentPane().add(scroll, BorderLayout.CENTER);
-		this.validate();
+		/*
+		 * if (scroll != null) { this.remove(scroll); }
+		 */
+		// this.validate();
 		updateTitle();
+		this.map_window.repaint();
 		data_changed = false;
 	}
-
 
 	public static Image GetImage(String filename) {
 		while (img_cache.containsKey(filename) == false) {
@@ -105,152 +112,39 @@ public class MapEditorMain extends JFrame implements MouseListener, ActionListen
 		return img_cache.get(filename);
 	}
 
-
 	public static void HandleError(Throwable t) {
 		t.printStackTrace();
-		JOptionPane.showMessageDialog(null, t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, t.getMessage(), "Error",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
+	/*
+	 * @Override public void mouseClicked(MouseEvent evt) { try { if
+	 * (evt.getComponent() instanceof Icon) { //p("Wall icon selected."); Icon
+	 * ti = (Icon)evt.getComponent(); this.selected_icon = ti;
+	 * this.icons_panel.repaint(); } else if (evt.getComponent() instanceof
+	 * JToggleButton) { map_window.repaint(); } else if (evt.getComponent() ==
+	 * map_window) { mapWindowClicked(evt); } } catch (Exception ex) {
+	 * ex.printStackTrace(); } }
+	 */
 
-	@Override
-	public void mouseClicked(MouseEvent evt) {
-		try {
-			if (evt.getComponent() instanceof Icon) {
-				//p("Wall icon selected.");
-				Icon ti = (Icon)evt.getComponent();
-				this.selected_icon = ti;
-				this.icons_panel.repaint();
-			} else if (evt.getComponent() instanceof JToggleButton) {
-				map_window.repaint();
-			} else if (evt.getComponent() == map_window) {
-				mapWindowClicked(evt);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-
-	private void mapWindowClicked(MouseEvent evt) {
-		data_changed = true;
-		
-		/*int x = evt.getX() / MapWindow.SQ_SIZE;
-		int y = evt.getY() / MapWindow.SQ_SIZE;
-		//p("Square " + x + "," + y + " selected.");
-
-/*		if (x < this.map_data.size && y < this.map_data.size) {
-			ServerMapSquare sq = this.map_data.map[x][y]; 
-			//if (this.current_mode == CommandIcon.CMD_DRAW) {
-			if (selected_icon == null) {
-				// Do nothing
-			} else if (selected_icon instanceof WallIcon) {
-				if (selected_icon.cmd > 0) {
-					sq.major_type = MapDataTable.MT_WALL;
-					sq.texture_code = this.selected_icon.cmd;
-				} else { // Clear it
-					sq.major_type = MapDataTable.MT_NOTHING;
-					sq.texture_code = 0;
-				}
-			} else if (selected_icon instanceof FloorIcon) {
-				if (selected_icon.cmd > 0) {
-					sq.major_type = MapDataTable.MT_FLOOR;
-					sq.texture_code = this.selected_icon.cmd; 
-				} else { // Clear it
-					sq.major_type = MapDataTable.MT_NOTHING;
-					sq.texture_code = 0;
-				}
-			} else if (selected_icon instanceof RaisedFloorIcon) {
-				if (selected_icon.cmd > 0) {
-					//sq.major_type = MapDataTable.MT_FLOOR;
-					sq.raised_texture_code = this.selected_icon.cmd; 
-				} else { // Clear it
-					//sq.major_type = MapDataTable.MT_NOTHING;
-					sq.raised_texture_code = 0;
-				}
-			} else if (selected_icon instanceof MiscIcon) {
-				if (selected_icon.cmd > 0) {
-					MiscIcon si = (MiscIcon)selected_icon;
-					if (si.cmd == MiscIcon.DOOR) {
-						sq.door_type = si.side;
-					} else if (si.cmd == MiscIcon.DEPLOY) {
-						sq.deploy_sq_side = si.side;
-					} else if (si.cmd == MiscIcon.OWNER) {
-						sq.owner_side = si.side;
-					} else if (si.cmd == MiscIcon.ESCAPE_HATCH) {
-						sq.escape_hatch_side = si.side;
-					} else if (si.cmd == MiscIcon.COMPUTER) {
-						sq.major_type = MapDataTable.MT_COMPUTER;
-						sq.owner_side = si.side;
-					} else {
-						throw new RuntimeException("Unknown MiscIcon cmd:" + selected_icon.cmd);
-					}
-				} else { // Clear it
-					sq.owner_side = 0;
-					sq.deploy_sq_side = 0;
-					sq.door_type = 0;
-					sq.escape_hatch_side = 0;
-				}
-			} else if (selected_icon instanceof SceneryIcon) {
-				if (selected_icon.cmd > 0) {
-					SceneryIcon si = (SceneryIcon)selected_icon;
-					sq.scenery_code = si.cmd;
-					sq.scenery_direction = si.direction; 
-				} else { // Clear it
-					sq.scenery_code = 0;
-					sq.scenery_direction = 0;
-				}
-			} else {
-				throw new RuntimeException("Unknown select icon: " + this.selected_icon);
-			}
-			//} 
-			this.map_window.repaint();
-		}*/
-	}
-
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// Do nothing
-
-	}
-
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// Do nothing
-
-	}
-
-
-	@Override
-	public void mousePressed(MouseEvent evt) {
-		try {
-			if (evt.getComponent() == map_window) {
-				mapWindowClicked(evt);
-			}
-		} catch (Exception ex) {
-			MapEditorMain.HandleError(ex);
-		}
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent evt) {
-		try {
-			if (evt.getComponent() == map_window) {
-				mapWindowClicked(evt);
-			}
-		} catch (Exception ex) {
-			MapEditorMain.HandleError(ex);
-		}
-	}
-
+	/*
+	 * private void mapWindowClicked(MouseEvent evt) { //data_changed = true;
+	 * //p("Square " + x + "," + y + " selected.");
+	 * this.map_window.clicked(evt); }
+	 */
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			String cmd = arg0.getActionCommand();
-			if (cmd.equalsIgnoreCase(MyMenuBar.CMD_LOAD)) {
+			if (cmd.equalsIgnoreCase(MyMenuBar.CMD_NEW)) {
+				if (checkForChanges() == false) {
+					return;
+				}
+				this.map_data = new MapData(); // todo - ask for mission name, num sides etc...
+				this.map_window.repaint();
+			} else if (cmd.equalsIgnoreCase(MyMenuBar.CMD_LOAD)) {
 				if (checkForChanges() == false) {
 					return;
 				}
@@ -305,44 +199,13 @@ public class MapEditorMain extends JFrame implements MouseListener, ActionListen
 		}
 	}
 
-
-	@Override
-	public void mouseDragged(MouseEvent evt) {
-		//p("Dragging");
-		try {
-			if (evt.getComponent() == map_window) {
-				mapWindowClicked(evt);
-			}
-		} catch (Exception ex) {
-			MapEditorMain.HandleError(ex);
-		}
-		
-	}
-
-
-	@Override
-	public void mouseMoved(MouseEvent evt) {
-		/*p("Moving");
-		try {
-			if (evt.getComponent() == map_window) {
-				mapWindowClicked(evt);
-			}
-		} catch (Exception ex) {
-			MapEditorMain.HandleError(ex);
-		}
-			*/	
-	}
-
-
 	@Override
 	public void windowActivated(WindowEvent arg0) {
 	}
 
-
 	@Override
 	public void windowClosed(WindowEvent arg0) {
 	}
-
 
 	@Override
 	public void windowClosing(WindowEvent evt) {
@@ -353,10 +216,11 @@ public class MapEditorMain extends JFrame implements MouseListener, ActionListen
 		System.exit(0);
 	}
 
-	
 	private boolean checkForChanges() {
 		if (this.data_changed) {
-			if (JOptionPane.showConfirmDialog(null, "Map not saved.  Continue?", "Closing", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+			if (JOptionPane.showConfirmDialog(null,
+					"Map not saved.  Continue?", "Closing",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 				return false;
 			}
 		}
@@ -367,31 +231,39 @@ public class MapEditorMain extends JFrame implements MouseListener, ActionListen
 	public void windowDeactivated(WindowEvent arg0) {
 	}
 
-
 	@Override
 	public void windowDeiconified(WindowEvent arg0) {
 	}
-
 
 	@Override
 	public void windowIconified(WindowEvent arg0) {
 	}
 
-
 	@Override
 	public void windowOpened(WindowEvent arg0) {
 	}
 
-	
 	public static void main(String args[]) {
 		new MapEditorMain();
 	}
-
 
 	public static void p(Object o) {
 		System.out.println(o);
 	}
 
+	public void setSelectedIcon(Icon ic) {
+		this.selected_icon = ic;
+		this.icons_panel.repaint();
+	}
 
+	public Icon getSelectedIcon() {
+		return selected_icon;
+
+	}
+	
+	
+	public void addLine(Line l) {
+		this.map_data.lines.add(l);
+	}
 
 }

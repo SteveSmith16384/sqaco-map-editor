@@ -9,6 +9,7 @@ import ssmith.lib2d.shapes.Line;
 
 public class MapEditorImportExport {
 	
+	public static final String VERSION = "version";
 	public static final String MISSION_NAME = "mission_name";
 	public static final String NUM_SIDES = "num_sides";
 	public static final String COMMENT = "comment";
@@ -51,12 +52,12 @@ public class MapEditorImportExport {
 
 	public static void Export(MapData map, String filename) throws FileNotFoundException, IOException {
 		StringBuffer data = new StringBuffer();
-		data.append("version," + MapEditorMain.VERSION + "\n");
-		data.append("mission_name," + map.mission_name + "\n");
-		data.append("num_sides," + map.num_sides + "\n");
+		data.append(VERSION + "," + MapEditorMain.VERSION + "\n");
+		data.append(MISSION_NAME + "," + map.mission_name + "\n");
+		data.append(NUM_SIDES +"," + map.num_sides + "\n");
 		
 		for (Line l : map.lines) {
-			data.append(l.get)
+			data.append(l.getName() + "," + l.start.x + "," + l.start.y + "," + l.end.x + "," + l.end.y + "\n");
 		}
 
 

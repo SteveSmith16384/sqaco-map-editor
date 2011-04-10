@@ -8,6 +8,7 @@ import scs.squacomaped.MapEditorMain;
 
 public class MyMenuBar extends JMenuBar {
 	
+	public static final String CMD_NEW = "New";
 	public static final String CMD_LOAD = "Open";
 	public static final String CMD_SAVE = "Save";
 	public static final String CMD_SAVE_AS = "Save As";
@@ -24,7 +25,12 @@ public class MyMenuBar extends JMenuBar {
 		this.add(menu_file);
 
 		// Create a menu item
-		JMenuItem item = new JMenuItem(CMD_LOAD);
+		JMenuItem item = new JMenuItem(CMD_NEW);
+		item.setActionCommand(CMD_NEW);
+		item.addActionListener(m);
+		menu_file.add(item);
+
+		item = new JMenuItem(CMD_LOAD);
 		item.setActionCommand(CMD_LOAD);
 		item.addActionListener(m);
 		menu_file.add(item);
