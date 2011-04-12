@@ -11,7 +11,7 @@ public abstract class AbstractIconPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	public AbstractIconPanel() {
-		this.setLayout(new GridLayout(2, 0));
+		this.setLayout(new GridLayout(1, 0));
 	}
 
 

@@ -1,0 +1,10 @@
+version,0.1
+mission_name,null
+num_sides,0
+wall,180,150,525,150
+wall,180,150,180,375
+wall,180,375,525,375
+wall,525,150,525,375
+Deploy1,210,165
+Deploy1,255,165
+

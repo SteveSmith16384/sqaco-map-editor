@@ -1,9 +1,9 @@
 version,
 mission_name,
 num_sides,
-wall,type,sx,sy,ex,ey
-door,type,sx,sy,ex,ey
-window,type,sx,sy,ex,ey
+wall,sx,sy,ex,ey
+door,sx,sy,ex,ey
+window,sx,sy,ex,ey
 computer,side,sx,sy,ex,ey
 deploy_sq,side,x,y
 comment,

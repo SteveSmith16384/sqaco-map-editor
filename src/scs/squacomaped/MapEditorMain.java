@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -18,7 +15,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
 
 import scs.squacomaped.gui.Icon;
 import scs.squacomaped.gui.IconPanelsPanel;
@@ -26,7 +22,6 @@ import scs.squacomaped.gui.MapWindow;
 import scs.squacomaped.gui.MyMenuBar;
 import scs.squacomaped.gui.SelectLayersPanel;
 import ssmith.lib2d.Camera;
-import ssmith.lib2d.shapes.Line;
 
 // Todo - rename
 public class MapEditorMain extends JFrame implements ActionListener, WindowListener {
@@ -38,7 +33,7 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 
 	private static final long serialVersionUID = 1L;
 
-	private MapData map_data = new MapData();
+	public MapData map_data = new MapData();
 	private MapWindow map_window;
 	private static Hashtable<String, Image> img_cache = new Hashtable<String, Image>();
 	private Icon selected_icon = null;
@@ -81,6 +76,7 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 		}
 	}
 
+	
 	public MapData getMapData() {
 		return this.map_data;
 	}
@@ -114,8 +110,7 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 
 	public static void HandleError(Throwable t) {
 		t.printStackTrace();
-		JOptionPane.showMessageDialog(null, t.getMessage(), "Error",
-				JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, t.toString(), "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	/*
@@ -154,13 +149,17 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 					this.loadMap(fc.getSelectedFile().toString());
 				}
 			} else if (cmd.equalsIgnoreCase(MyMenuBar.CMD_SAVE)) {
+				if (current_filename.length() > 0) {
 				if (this.map_data != null) {
 					MapEditorImportExport.Export(this.map_data, current_filename);
 					data_changed = false;
 					JOptionPane.showMessageDialog(this, "Map file saved", "Saved", JOptionPane.INFORMATION_MESSAGE);
 				} else {
-					JOptionPane.showMessageDialog(this, "No map to save!", "NOT Saved!", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this, "No map to save!", "NOT Saved!", JOptionPane.ERROR_MESSAGE);
 				}
+			} else {
+				JOptionPane.showMessageDialog(this, "Please select Save As...", "NOT Saved!", JOptionPane.ERROR_MESSAGE);
+			}
 			} else if (cmd.equalsIgnoreCase(MyMenuBar.CMD_SAVE_AS)) {
 				if (this.map_data != null) {
 					JFileChooser fc = new JFileChooser(new File(current_filename).getAbsolutePath());
@@ -261,9 +260,5 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 
 	}
 	
-	
-	public void addLine(Line l) {
-		this.map_data.lines.add(l);
-	}
 
 }

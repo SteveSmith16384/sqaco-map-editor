@@ -49,6 +49,11 @@ public abstract class Spatial {
 	}
 
 
+	public void setName(String s) {
+		name = s;
+	}
+	
+	
 	public MyRectF getWorldBounds() {
 		return world_bounds;
 	}

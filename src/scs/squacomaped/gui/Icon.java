@@ -14,23 +14,36 @@ import scs.squacomaped.MapEditorMain;
 public abstract class Icon extends JComponent implements MouseListener {
 	
 	// Commands
-	public static final int CMD_ERASE = 1;
-	public static final int CMD_WALL = 2;
-	public static final int CMD_DOOR = 3;
+	public static final String CMD_ERASE = "Erase";
+	
+	// These are also used in the file format SO DON'T CHANGE!!
+	public static final String CMD_WALL = "Wall";
+	public static final String CMD_DOOR = "Door";
+	public static final String CMD_HEDGE = "Hedge";
+	public static final String CMD_DEPLOY1 = "Deploy1";
+	public static final String CMD_DEPLOY2 = "Deploy2";
+	public static final String CMD_DEPLOY3 = "Deploy3";
+	public static final String CMD_DEPLOY4 = "Deploy4";
+	public static final String CMD_ESCAPE1 = "Escape1";
+	public static final String CMD_ESCAPE2 = "Escape2";
+	public static final String CMD_ESCAPE3 = "Escape3";
+	public static final String CMD_ESCAPE4 = "Escape4";
 	
 	public static final int ICON_SIZE = 25;
 
 	private static final long serialVersionUID = 1L;
-
 	
-	private int cmd;
+	public String cmd;
 	private Image img;
 	private MapEditorMain main;
+	public boolean single_click_scenery;
 	
-	public Icon(MapEditorMain m, int _cmd, String image_filename) {
+	public Icon(MapEditorMain m, String _cmd, String image_filename, boolean _single_click_scenery) {
 		main = m;
 		cmd = _cmd;
 		img = MapEditorMain.GetImage(image_filename);
+		single_click_scenery = _single_click_scenery;
+		
 		this.setSize(ICON_SIZE, ICON_SIZE);
 		this.setPreferredSize(new Dimension(ICON_SIZE, ICON_SIZE));
 		this.addMouseListener(this);
