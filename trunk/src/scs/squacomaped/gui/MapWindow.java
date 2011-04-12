@@ -14,10 +14,12 @@ import scs.squacomaped.MapData;
 import scs.squacomaped.MapEditorMain;
 import ssmith.lib2d.ICanvas;
 import ssmith.lib2d.shapes.Line;
+import ssmith.lib2d.shapes.RectShape;
 
 public class MapWindow extends JComponent implements ICanvas, MouseListener, MouseMotionListener {
 
 	private static final int DEF_SIZE = 1000;
+	private static final int POINT_SIZE = 5;
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,7 +40,7 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 
 
 	public void setPreferredSize() {
-		MapData map = main.getMapData();
+		//MapData map = main.getMapData();
 		this.setSize(DEF_SIZE, DEF_SIZE);
 		this.setPreferredSize(new Dimension(DEF_SIZE, DEF_SIZE));
 		this.validate();
@@ -61,17 +63,24 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 		return mouse_point;
 	}
 
+
 	@Override
 	public void mouseClicked(MouseEvent evt) {
 		Point p = this.getPoint(evt);
 		if (this.current_line == null) { // New line
-			this.current_line = new Line("CurrentLine", Color.red);
-			this.current_line.start.x = p.x;
-			this.current_line.start.y = p.y;
+			if (main.getSelectedIcon().single_click_scenery) {
+				main.map_data.points.add(new RectShape(main.getSelectedIcon().cmd, p.x, p.y, p.x + POINT_SIZE, p.y + POINT_SIZE, Color.red));
+				this.repaint();
+			} else {
+				this.current_line = new Line("CurrentLine", Color.red); // todo - colour
+				this.current_line.start.x = p.x;
+				this.current_line.start.y = p.y;
+			}
 		} else { // Finished!
 			this.current_line.end.x = p.x;
 			this.current_line.end.y = p.y;
-			main.addLine(current_line);
+			current_line.setName(main.getSelectedIcon().cmd);
+			main.map_data.lines.add(current_line);
 			this.repaint();
 			current_line = null;
 		}

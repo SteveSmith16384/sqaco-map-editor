@@ -11,7 +11,8 @@ public class IconPanelsPanel extends JTabbedPane {
 	public IconPanelsPanel(MapEditorMain m) {
 		super();
 		
-		this.addTab("Walls", null, new WallIconsPanel(m), "Walls");
+		this.addTab("Scenery", null, new SceneryIconsPanel(m), "Scenery");
+		this.addTab("Functions", null, new FunctionIconsPanel(m), "Functions");
 		
 	}
 
