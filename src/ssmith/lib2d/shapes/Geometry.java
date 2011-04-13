@@ -6,7 +6,7 @@ import ssmith.lib2d.Spatial;
 
 public abstract class Geometry extends Spatial {
 	
-	protected Color col;
+	public Color col;
 	
 	public Geometry(String name, Color c) {
 		super(name);
@@ -14,5 +14,5 @@ public abstract class Geometry extends Spatial {
 		col = c;
 	}
 	
-	
+
 }

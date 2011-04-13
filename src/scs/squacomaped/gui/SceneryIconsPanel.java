@@ -19,17 +19,17 @@ public class SceneryIconsPanel extends AbstractIconPanel {
 		this.add(ti);
 		ti = new SceneryIcon(main, Icon.CMD_DEPLOY2, MapEditorMain.MAP_ED_ICONS + "deploy2.png", true);
 		this.add(ti);
-		ti = new SceneryIcon(main, Icon.CMD_DEPLOY3, MapEditorMain.MAP_ED_ICONS + "deploy3.png", true);
+		/*ti = new SceneryIcon(main, Icon.CMD_DEPLOY3, MapEditorMain.MAP_ED_ICONS + "deploy3.png", true);
 		this.add(ti);
 		ti = new SceneryIcon(main, Icon.CMD_DEPLOY4, MapEditorMain.MAP_ED_ICONS + "deploy4.png", true);
-		this.add(ti);
+		this.add(ti);*/
 		ti = new SceneryIcon(main, Icon.CMD_ESCAPE1, MapEditorMain.MAP_ED_ICONS + "escape1.png", true);
 		this.add(ti);
 		ti = new SceneryIcon(main, Icon.CMD_ESCAPE2, MapEditorMain.MAP_ED_ICONS + "escape2.png", true);
 		this.add(ti);
-		ti = new SceneryIcon(main, Icon.CMD_ESCAPE3, MapEditorMain.MAP_ED_ICONS + "escape3.png", true);
+		/*ti = new SceneryIcon(main, Icon.CMD_ESCAPE3, MapEditorMain.MAP_ED_ICONS + "escape3.png", true);
 		this.add(ti);
 		ti = new SceneryIcon(main, Icon.CMD_ESCAPE4, MapEditorMain.MAP_ED_ICONS + "escape4.png", true);
-		this.add(ti);
+		this.add(ti);*/
 	}
 }

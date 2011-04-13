@@ -56,6 +56,7 @@ public class RectShape extends Geometry {
 	public void doDraw(Graphics g, Camera cam, long interpol) {
 		super.informRenderListeners(interpol);
 		if (this.visible) {
+			g.setColor(this.col);
 			//Log.d("tag", "Drawing rect");
 			temp_rect.set(rect);
 			temp_rect.offset((int)-cam.left + this.world_coords_offset.x, (int)-cam.top + this.world_coords_offset.y);
