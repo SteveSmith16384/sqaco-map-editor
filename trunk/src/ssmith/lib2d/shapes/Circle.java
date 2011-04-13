@@ -27,6 +27,7 @@ public class Circle extends Geometry {
 	public void doDraw(Graphics g, Camera cam, long interpol) {
 		super.informRenderListeners(interpol);
 		if (this.visible) {
+			g.setColor(this.col);
 			//todo g.drawOval((int)(this.centre.x - radius - cam.left + this.world_coords_offset.x), this.centre.y - radius - cam.top + this.world_coords_offset.y, radius*2, radius*2);
 		}
 	}

@@ -72,6 +72,7 @@ public class Line extends Geometry {
 	public void doDraw(Graphics g, Camera cam, long interpol) {
 		super.informRenderListeners(interpol);
 		if (this.visible) {
+			g.setColor(this.col);
 			g.drawLine((int)(start.x - cam.left + world_coords_offset.x), (int)(start.y - cam.top + world_coords_offset.y), (int)(end.x - cam.left + world_coords_offset.x), (int)(end.y - cam.top + world_coords_offset.y));
 		}		
 	}

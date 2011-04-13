@@ -31,6 +31,11 @@ public class Node extends Spatial {
 	}
 	
 	
+	public void add(Spatial s) {
+		this.attachChild(s);
+	}
+	
+	
 	public void attachChild(Spatial s) {
 		if (s.getParent() != null) {
 			throw new RuntimeException(s + " already has a parent!");

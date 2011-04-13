@@ -23,7 +23,6 @@ import scs.squacomaped.gui.MyMenuBar;
 import scs.squacomaped.gui.SelectLayersPanel;
 import ssmith.lib2d.Camera;
 
-// Todo - rename
 public class MapEditorMain extends JFrame implements ActionListener, WindowListener {
 
 	public static final boolean DEBUG = false;
@@ -87,11 +86,7 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 
 	public void loadMap(String filename) throws IOException {
 		current_filename = filename;
-		this.map_data = MapEditorImportExport.Import(filename);
-		/*
-		 * if (scroll != null) { this.remove(scroll); }
-		 */
-		// this.validate();
+		this.map_data = MapEditorImportExport.Import(filename); // todo - put map data into sub-nodes?
 		updateTitle();
 		this.map_window.repaint();
 		data_changed = false;
@@ -186,7 +181,7 @@ public class MapEditorMain extends JFrame implements ActionListener, WindowListe
 				this.repaint();
 			} else if (cmd.equalsIgnoreCase(MyMenuBar.CMD_CHECK_MAP)) {
 				StringBuffer str = new StringBuffer();
-				// todo?
+				// Nothing yet
 				if (str.length() > 0) {
 					JOptionPane.showMessageDialog(this, str.toString(), "Map Issues", JOptionPane.INFORMATION_MESSAGE);
 				}

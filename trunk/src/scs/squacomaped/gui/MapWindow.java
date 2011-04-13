@@ -7,25 +7,33 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
 import scs.squacomaped.MapData;
 import scs.squacomaped.MapEditorMain;
+import scs.squacomaped.Static;
+import scs.squacomaped.shapes.IHighlight;
+import scs.squacomaped.shapes.MyLine;
+import scs.squacomaped.shapes.MyRectShape;
 import ssmith.lib2d.ICanvas;
+import ssmith.lib2d.Spatial;
+import ssmith.lib2d.shapes.Geometry;
 import ssmith.lib2d.shapes.Line;
+import ssmith.lib2d.shapes.PointShape;
 import ssmith.lib2d.shapes.RectShape;
 
 public class MapWindow extends JComponent implements ICanvas, MouseListener, MouseMotionListener {
 
 	private static final int DEF_SIZE = 1000;
-	private static final int POINT_SIZE = 5;
+	public static final int POINT_SIZE = 5;
 
 	private static final long serialVersionUID = 1L;
 
 	private MapEditorMain main;
 	public int sq_size = 15; // Fit to grid
-	public Line current_line;
+	public MyLine current_line;
 	public int mouse_x, mouse_y;
 	private Point mouse_point = new Point();
 
@@ -66,25 +74,33 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
-		Point p = this.getPoint(evt);
-		if (this.current_line == null) { // New line
-			if (main.getSelectedIcon().single_click_scenery) {
-				main.map_data.points.add(new RectShape(main.getSelectedIcon().cmd, p.x, p.y, p.x + POINT_SIZE, p.y + POINT_SIZE, Color.red));
+		if (main.getSelectedIcon() instanceof SceneryIcon) {
+			Point p = this.getPoint(evt);
+			if (this.current_line == null) {
+				if (main.getSelectedIcon().single_click_scenery) {
+					main.map_data.root_node.add(new MyRectShape(main.getSelectedIcon().cmd, p.x, p.y, p.x + MapWindow.POINT_SIZE, p.y + MapWindow.POINT_SIZE, Color.red));
+					this.repaint();
+				} else { // New line
+					this.current_line = new MyLine("CurrentLine", Color.red);
+					this.current_line.start.x = p.x;
+					this.current_line.start.y = p.y;
+				}
+			} else { // Finished line
+				this.current_line.end.x = p.x;
+				this.current_line.end.y = p.y;
+				current_line.setName(main.getSelectedIcon().cmd);
+				current_line.col = Static.GetColorForType(main.getSelectedIcon().cmd);
+				main.map_data.root_node.add(current_line);
 				this.repaint();
-			} else {
-				this.current_line = new Line("CurrentLine", Color.red); // todo - colour
-				this.current_line.start.x = p.x;
-				this.current_line.start.y = p.y;
+				current_line = null;
 			}
-		} else { // Finished!
-			this.current_line.end.x = p.x;
-			this.current_line.end.y = p.y;
-			current_line.setName(main.getSelectedIcon().cmd);
-			main.map_data.lines.add(current_line);
-			this.repaint();
-			current_line = null;
+		} else if (main.getSelectedIcon().cmd == Icon.CMD_ERASE) {		
+			PointShape ps = new PointShape("ErasePoint", evt.getX(), evt.getY(), Color.black);
+			ArrayList<Geometry> colls = ps.getColliders(main.map_data.root_node);
+			for (Geometry c : colls) {
+				c.removeFromParent();
+			}
 		}
-
 
 	}
 
@@ -93,7 +109,6 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 	public void mouseDragged(MouseEvent evt) {
 		//p("Dragging");
 		try {
-			// todo
 		} catch (Exception ex) {
 			MapEditorMain.HandleError(ex);
 		}
@@ -104,11 +119,29 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 	@Override
 	public void mouseMoved(MouseEvent evt) {
 		try {
-			if (this.current_line != null) {
-				Point p = this.getPoint(evt);
-				this.current_line.end.x = p.x;
-				this.current_line.end.y = p.y;
-				this.repaint();
+			if (main.getSelectedIcon() != null) {
+				if (main.getSelectedIcon().cmd == Icon.CMD_ERASE) {
+					// todo - this better
+					PointShape ps = new PointShape("ErasePoint", evt.getX(), evt.getY(), Color.black);
+					ArrayList<Geometry> colls = ps.getColliders(main.map_data.root_node);
+					for (Geometry c : colls) {
+						//if (c instanceof IHighlight) {
+						IHighlight ih = (IHighlight)c; // Should not error, all must implement IHighlight
+						ih.highlight(true);
+						//}
+					}
+					if (colls.size() > 0) {
+						this.invalidate();
+						this.repaint();
+					}
+				} else {
+					if (this.current_line != null) {
+						Point p = this.getPoint(evt);
+						this.current_line.end.x = p.x;
+						this.current_line.end.y = p.y;
+						this.repaint();
+					}
+				}
 			}
 		} catch (Exception ex) {
 			MapEditorMain.HandleError(ex);
@@ -122,7 +155,7 @@ public class MapWindow extends JComponent implements ICanvas, MouseListener, Mou
 		}
 		MapData map = main.getMapData();
 		if (map != null) {
-			for(Line l : map.lines) {
+			for(Spatial l : map.root_node.children) {
 				l.doDraw(g, main.cam, 0l);
 			}
 		}
