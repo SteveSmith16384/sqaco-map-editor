@@ -1,0 +1,1 @@
+A program for creating and editing maps for Squad Commander, an Android TBS game.
